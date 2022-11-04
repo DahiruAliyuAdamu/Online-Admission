@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block main %}
+    <div class="sub-menu-mobile">
+        Rights side Menu
+    </div>
+
+    <div class="sub-menu-icon">
+        icon
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script>
+        $('.sub-menu-icon').on('click', function(){
+           $('.sub-menu-mobile').toggleClass('width'); 
+        });
+    </script>
+{% endblock %}

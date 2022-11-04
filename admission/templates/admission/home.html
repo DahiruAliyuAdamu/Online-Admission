@@ -1,0 +1,44 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %} index {% endblock %}
+{% block style %} {% endblock %}
+
+{% block main %}
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content">
+        <div class="left">
+            <h2>Al-Imamu Malik Community Islamic School</h2>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo, modi optio illo omnis consectetur voluptatibus voluptas! In corporis suscipit, nihil atque, modi aspernatur corrupti ut eius fugiat quo harum doloribus!</p>
+            {% if current_session %}
+                {% if session %}
+                    <a href="{% url 'apply' %}">Apply for Admission</a>
+                {% else %}
+                    <p>No application Open Yet.</p>
+                {% endif %}
+            {% endif %}
+            <a href="{% url 'check_admission' %}">Check for Admission</a>
+        </div>
+        <div class="right">
+            <img src="{% static 'images/adm 18.jpg' %}" alt="">
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    // page loader
+    $.ajax({
+        method: 'GET',
+        url: "{% url 'home' %}",
+        success:function(res){
+            $('.loader').css('display', 'none');
+        },
+        before:function(res){
+            $('.loader').css('display', 'block');
+        }
+    });
+</script>
+{% endblock %}

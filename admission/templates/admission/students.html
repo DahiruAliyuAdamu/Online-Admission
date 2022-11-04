@@ -1,0 +1,17 @@
+{% for student in students %}
+<tr>
+    <td>{{ forloop.counter }}</td>
+    <td>{{ student.applicant.get_fullname }}</td>
+    <td>{{ student.session }}</td>
+    <td>{% if  student.admitted %}
+        <a href="{% url 'download' student.pk %}" target="blank">Download Admission</a>
+        {% else %}
+            <small>Rejected</small>
+        {% endif %}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="11" style="text-align: center; color: red;">No Record Found</td>
+</tr>
+{% endfor %}

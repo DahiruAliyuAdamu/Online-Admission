@@ -1,0 +1,87 @@
+{% extends 'login_base.html' %}
+{% load static %}
+
+{% block title %} Login {% endblock %}
+
+{% block main %}
+  <div class="content-page">
+    
+    <div class="login-form" id="login">
+      <h3>Login Form</h3>
+      {% if next %}
+        {% if user.is_authenticated %}
+          <p style="color: red;">Your account doesn't have access to this page. To Proceed,
+          please login with an account that has access.</p>
+        {% else %}
+          <p style="color: red;">Please login to see this page.</p>
+        {% endif %}
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <p class="message"></p>
+        {{form}}   
+        <div class="action">
+          <input type="submit" name="login" value="Sign in" class="login">          
+        </div>
+        <p>Don't have an account? <a href="{% url 'register' %}" class="link">click here</a></p>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+<script>
+  $(document).ready(function(){
+    $('body').on("click", '.login', function(e){
+      e.preventDefault();
+
+      $('#id_username').css('border', 'solid 1px black');
+      $('#id_password').css('border', 'solid 1px black')
+
+      let username = $('#id_username').val();
+      let password = $('#id_password').val();
+      let token = $('input[name="csrfmiddlewaretoken"]').val();
+      
+      if (username == ''){
+        $('#id_username').css('border', 'solid 1px red');
+      }else if (password == '') {
+        $('#id_password').css('border', 'solid 1px red')
+      }else{
+        $.ajax({
+          url: "{% url 'login' %}",
+          data: {
+              username:username,
+              password:password,
+              'csrfmiddlewaretoken': token,
+          },
+          method: "POST",
+          success:function(response){
+            if (response.message == 'login'){
+              $('.message').html('Login Success redirecting...')
+              $('.message').css({'color': 'black'})
+              console.log('Login Success')
+              window.location = "{% url 'admin' %}";
+            }else if (response.message == 'not login'){
+              $('.message').html('User not Found try again')
+              $('.message').css({'color': 'red'})
+              console.log('User not Found')
+              $('#id_username').val('');
+              $('#id_password').val('');
+            }
+            $('.login').attr('disabled', false);
+            $('.login').html('Please wait...')
+          },
+          beforeSend:function(){
+              $('.login').attr('disabled', true);
+              $('.login').html('Please wait...')
+          },
+          complete:function(){
+          	
+          }
+        })
+      }
+    });
+  });
+</script>
+
+{% endblock %}

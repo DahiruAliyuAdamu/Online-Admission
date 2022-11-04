@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Create Session {% endblock %}
+{% block style %} {% endblock %}
+
+{% block main %}
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content-page">
+        <div class="content-wrapper">
+            <div class="left">
+                <h3>Create Session</h3>
+                <form action="{% url 'create_session' %}" method="post">
+                    {% csrf_token %}
+                    {{ form }}
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            <table style="margin-top: 20px;" id="session">
+                <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th>Session</th>
+                        <th>Date Created</th>
+                        <th>Status</th>
+                        <th>Activate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ session.session }}</td>
+                        <td>{{ session.session }}</td>
+                        <td>{{ session.status }}</td>
+                        <td>{{ session.current_session }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready( function () {
+        $('#session').DataTable()
+        // page loader
+        $.ajax({
+            method: 'GET',
+            url: "{% url 'admin' %}",
+            success:function(res){
+                $('.loader').css('display', 'none');
+            },
+            before:function(res){
+                $('.loader').css('display', 'block');
+            }
+        });
+    } );
+</script>
+{% endblock %}

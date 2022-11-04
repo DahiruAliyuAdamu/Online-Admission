@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Admin Home Page {% endblock %}
+{% block style %} {% endblock %}
+
+{% block main %}
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content-page admin-page">
+        <h3>Admin Home Page</h3>
+        {% if not current_session %}
+        <div class="cur_sess">
+            <p style="color: red;">Please set of current session</p>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="session">Select session</label>
+                <select name="session" id="session-id">
+                    <option value="" disabled>Select One</option>
+                    {% for session in sessions %}
+                        <option value="{{session.session}}">{{session.session}}</option>            
+                    {% endfor %}
+                </select>
+                <button type="submit" id="current-session">Set Current Session</button>
+            </form>
+        </div>
+        {% else %}
+            <div class="change-session">
+                <span id="change">Change current session</span>
+                <div class="change-form">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <label for="session">Select session</label>
+                        <select name="session" id="session-id">
+                            <option value="" disabled>Select One</option>
+                            {% for session in sessions %}
+                                <option value="{{session.session}}">{{session.session}}</option>            
+                            {% endfor %}
+                        </select>
+                        <button type="submit" id="current-session">Set Current Session</button>
+                    </form>
+                </div>
+            </div>
+            {% if session %}
+            <div class="close">
+                {% for ses in session %}
+                    <p>Admission for {{ ses.session }} Academic session is on going. Do you want to close it?</p>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ses.session}}" id="session">
+                        <button type="submit" id="btn-close">Close</button>
+                    </form>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="open">
+                <p>No any admission Process in on going. Do you want to open?</p>
+                <button class="open-btn">Open</button>
+
+                <form method="POST" class="form-open">
+                    {% csrf_token %}
+                    <label for="session">Select session</label>
+                    <select name="session" id="session-id">
+                        <option value="" disabled>Select One</option>
+                        {% for session in sessions %}
+                            <option value="{{session.session}}">{{session.session}}</option>            
+                        {% endfor %}
+                    </select>
+                    <button type="submit" id="btn-open">Open</button>
+                </form>
+            </div>
+            {% endif %}
+        {% endif %}
+        
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    // page loader
+    $.ajax({
+        method: 'GET',
+        url: "{% url 'admin' %}",
+        success:function(res){
+            $('.loader').css('display', 'none');
+        },
+        before:function(res){
+            $('.loader').css('display', 'block');
+        }
+    });
+    $(document).ready( function () {
+        toastr.options = {
+            "closeButton": true,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        // change current session
+        $('.change-form').hide()
+        $('body').on('click', '#change', function(){
+            $('.change-form').show()
+        })
+
+        // set current session
+        $('body').on('click', '#current-session', function(e){
+            e.preventDefault();
+            let session = $('#session-id').val();
+            let data  = 'current_session';
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            console.log(session);
+            $.ajax
+            ({
+                url: "{% url 'admin' %}",
+                data: {
+                    session:session,
+                    'csrfmiddlewaretoken': token,
+                    status: data,
+                },
+                method: "POST",
+                success:function(response){
+                    console.log(response)
+                    toastr.success(response.message, response.status);
+                    $('#current-session').removeAttr('disabled', false);
+                    $('#current-session').html('Set Current Session');
+                    location.reload();
+                },
+                beforeSend:function(){
+                    $('#current-session').attr('disabled', true);
+                    $('#current-session').html('Please wait...')
+                },
+                // complete:function(){
+                // 	$('.causes').addAttr('disabled');
+                // }
+            });
+        });
+
+
+        // closing admission
+        $('body').on('click', '#btn-close', function(e){
+            e.preventDefault();
+            let session = $('#session').val();
+            let data  = 'close';
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            console.log(session);
+            $.ajax
+            ({
+                url: "{% url 'admin' %}",
+                data: {
+                    session:session,
+                    'csrfmiddlewaretoken': token,
+                    status: data,
+                },
+                method: "POST",
+                success:function(response){
+                    console.log(response)
+                    toastr.success(response.message, response.status);
+                    $('#btn-close').removeAttr('disabled', false);
+                    $('#btn-close').html('close');
+                    location.reload();
+                },
+                beforeSend:function(){
+                    $('#btn-close').attr('disabled', true);
+                    $('#btn-close').html('Please wait...')
+                },
+                // complete:function(){
+                // 	$('.causes').addAttr('disabled');
+                // }
+            });
+        });
+
+        // show form for opening session
+        $('.form-open').hide();
+        $('body').on('click', '.open-btn', function(e){
+            $(this).hide();
+            $('.form-open').show();
+        });
+
+        // closing admission
+        $('body').on('click', '#btn-open', function(e){
+            e.preventDefault();
+            let session = $('#session-id').val();
+            let data  = 'open';
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            console.log(session);
+            $.ajax
+            ({
+                url: "{% url 'admin' %}",
+                data: {
+                    session:session,
+                    'csrfmiddlewaretoken': token,
+                    status: data,
+                },
+                method: "POST",
+                success:function(response){
+                    console.log(response)
+                    toastr.success(response.message, response.status);
+                    $('#btn-open').removeAttr('disabled', false);
+                    $('#btn-open').html('open');
+                },
+                beforeSend:function(){
+                    $('#btn-open').attr('disabled', true);
+                    $('#btn-open').html('Please wait...')
+                },
+                complete:function(){
+                	location.reload();
+                }
+            });
+        });
+    } );
+</script>
+{% endblock %}

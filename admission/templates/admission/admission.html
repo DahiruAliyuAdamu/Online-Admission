@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ admission.applicant.get_fullname }}</title>
+
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container{
+            margin: 0 -30px;
+            /* border-left: solid 2px #000; */
+            padding: 10px;
+        }
+        .school_name{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: solid 2px #000;
+            margin-bottom: 10px;
+        }
+        .logo, .sign{
+            width: 100px;
+            height: 70px;
+            margin-right: 10px;
+        }
+        .logo img{
+            width: 100%;
+            height: 100%;
+        }
+        .names{
+            width: 80%;
+            text-align: center;  
+        }
+        .names h1{
+            font-size: 20px;
+        }
+        .names h2{
+            font-size: 18px;
+            
+        }
+        .names h3{
+            font-size: 18px;
+            color: red;
+        }
+        .manager{
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .applicant{
+            padding: 10px 0;
+            width: 30%;
+        }
+        .name{
+            margin-bottom: 5px;
+        }
+        .text{
+            text-align: center;
+            margin: 12px 0;
+            font-size: 25px;
+        }
+        .body{
+            line-height: 24px;
+            margin-bottom: 40px;
+        }
+        .body p{
+            margin: 10px 0;
+        }
+        .body ol{
+            margin: 10px 40px;
+        }
+        .body small{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="school_name">
+            <div class="logo">
+                <img src="{% static 'images/logo.PNG' %}" alt="School Logo" srcset="">
+            </div>
+            <div class="names">
+                <h1>AL IMAMU MALIC COMMUNITY ISLAMIC SCHOOL</h1>
+                <h3>Behind Sarkin Doka's residence, Dawaki Gombe</h3>
+                <H2>ACADEMIC OFFICE</H2>
+            </div>
+        </div>
+        <div class="manager">
+            <div class="num">
+                <small>AD/{{admission.session}}/{{admission_number}}</small>
+            </div>
+            <div class="principal">
+                <p id="principal">Principal: <strong>Haruna Sa'ad Shu'aibu</strong></p>
+                <p class="admission_office">Admission Officer: <strong>Dahiru Aliyu Adamu</strong></p>
+            </div>
+        </div>
+        <div class="applicant">
+            <div class="applicant-add">
+                <p class="name">Dear <strong>{{ admission.applicant.get_fullname|title }},</strong></p>
+                <p><small>{{ admission.applicant.per_address }}</small></p>
+            </div>
+        </div>
+
+        <h1 class="text">OFFER OF PROVISSIONAL ADMISSION INTO {{ admission.applicant.class_room|upper }} - {{admission.session}}</h1>
+        
+        <div class="body">
+            <p>
+                I am pleased to inform you that Al Imamu Malik Community Islamic School (ALIMCOIS), Dawaki has offered you 
+                a provisional admission into {{ admission.applicant.class_room }} with effect from {{admission.session}} Academic Session.
+            </p>
+            <p>
+                At the time of registration, you will be required to present the originals of your certicate (s) or other acceptable
+                evidence of the qualifications on which this offer of admission was based. which includes:
+                <ol>
+                    <li>Passport with white background</li>
+                    <li>Birth Certificate</li>
+                    <li>Indegine Letter</li>
+                    <li>Primary certificate</li>
+                    <li>Junior certificate</li>
+                </ol>
+            </p>
+            <p>
+                The schedule of payment are as follows:
+                <ol>
+                    <li><strong>Nursery:</strong> N13, 250</li>
+                    <li><strong>Primary:</strong> N15, 450</li>
+                    <li><strong>Junior:</strong> N17, 750</li>
+                    <li><strong>Senior:</strong> N20, 000</li>
+                </ol>
+            </p>
+            <p>
+                <small>NOTE: </small>
+                If you decide to reject/change school after you have been offered provisional admission by this School,
+                please do not proceed with registration here.
+            </p>
+            <p>Accept my congratulations.</p>
+        </div>
+
+        <div class="signature">
+            <img class="sign" src="{% static 'images/signature-1.jpg' %}" alt="signature" srcset="qwerty">
+            <p><strong>H. S. Shu'aibu</strong></p>
+            <p><strong>Principal</strong></p>
+        </div>
+    </div>
+</body>
+</html>

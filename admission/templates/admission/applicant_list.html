@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} applicant list {% endblock %}
+{% block style %}
+<style>
+    #load-all{
+        position: absolute;
+        right: 196px;
+        top: 60px;
+    }
+
+    @media (max-width: 991px){
+        #load-all{
+            right: 60px;
+            top: 60px;
+        }
+    }
+    @media (max-width: 767px){
+        #admission_list_wrapper{
+            margin-top: 50px;
+        }
+        #admission_list_length{
+            width: 50%
+        }
+        #load-all{
+            right: 32px;
+            top: 100px;
+        }
+    }
+    
+</style>
+{% endblock %}
+
+{% block main %}
+    <button id="load-all" admission-list="applicant">Load All Data</button>
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content-page">
+        <h3>Applicant list</h3>
+        <table id="applicant-list">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Fullname</th>
+                    <th>Age</th>
+                    <th>Class</th>
+                    <th>Sponsor</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="loaded-students">
+                {% for applicant in applicants %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ applicant.first_name }} {{ applicant.second_name }} {{ applicant.last_name }}</td>
+                    <td>{{ applicant.age }}</td>
+                    <td>{{ applicant.class_room }}</td>
+                    <td>{% for sponsor in applicant.sponsor_set.all %}
+                            {{ sponsor.name }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if not applicant.admissions.all %}
+                            <button style="width: 80px; background: rgb(25, 78, 3);" id="admit" applicant-id="{{ applicant.id }}">Admit</button>
+                            <button style="width: 80px;" id="reject" reject="{{ applicant.id }}">Reject</button>
+                        {% else %}
+                            <span class="admitted">Admitted</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" style="text-align: center; color: red;">No Record Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+{% endblock %}
+
+{% block js %}
+<script>
+    // page loader
+    $.ajax({
+        method: 'GET',
+        url: "{% url 'applicantView' %}",
+        success:function(res){
+            $('.loader').css('display', 'none');
+        },
+        before:function(res){
+            $('.loader').css('display', 'block');
+        }
+    });
+    $(document).ready( function () {
+        toastr.options = {
+            "closeButton": true,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+        $('#applicant-list').DataTable();
+        
+        $('.admitted').hide();
+        $("body").on('click', '#admit', function(){
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            let search = $(this).attr('applicant-id');
+            console.log(search);
+            $.ajax({
+                url: "{% url 'admit' %}",
+                data: {
+                search: search,
+                'csrfmiddlewaretoken': token,
+                },
+                method: "GET",
+                success:function(response){
+                    if (response == 'admitted'){
+                        toastr.success('Successfully recorded !', 'Admitted');
+                        $(this).hide()
+                    }else{
+                        toastr.error('Already registered !', 'Admitted');
+                    }
+                    
+                }
+            });
+        });
+
+        $("body").on('click', '#load-all', function(){
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            let search = $(this).attr('admission-list');
+            alert(search);
+            
+            $.ajax({
+                url: "{% url 'load_all' %}",
+                data: {
+                search: search,
+                'csrfmiddlewaretoken': token,
+                },
+                method: "GET",
+                success:function(response){
+                    $('#loaded-students').html(response)
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

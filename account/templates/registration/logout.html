@@ -1,0 +1,23 @@
+{% extends 'login_base.html' %}
+{% load static %}
+
+
+{% block title %} logout {% endblock %}
+
+{% block style %}
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}"> -->
+{% endblock %} 
+
+{% block main %}
+	<div class="content-page">
+		<div class="login-form" id="login">
+			<h3>Logout</h3>
+			<p id="logout">Logout successful</p>
+			<a href="{% url 'login' %}" class="logout">Login again</a>
+		</div>
+	</div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

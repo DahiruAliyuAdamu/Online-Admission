@@ -1,0 +1,27 @@
+{% extends 'login_base.html' %}
+{% load static %}
+
+{% block title %} Register Admin {% endblock %}
+
+{% block main %}
+<div class="content-page">
+    
+    <div class="login-form">
+      <h3>Registration Form</h3>
+      <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        {{form}}   
+        <div class="action">
+          <input type="submit" name="login" value="Register" class="theme-btn btn-style-one">          
+        </div>
+        <p>Already have an account? <a href="{% url 'login' %}" class="link">click here</a></p>
+      </form>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        
+    </script>
+{% endblock %}

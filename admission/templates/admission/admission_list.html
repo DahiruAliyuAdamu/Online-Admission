@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} admission list {% endblock %}
+{% block style %} 
+    <style>
+        #load-all{
+            position: absolute;
+            right: 196px;
+            top: 60px;
+        }
+
+        @media (max-width: 991px){
+            #load-all{
+                right: 60px;
+                top: 60px;
+            }
+        }
+        @media (max-width: 767px){
+            #admission_list_wrapper{
+                margin-top: 50px;
+            }
+            #admission_list_length{
+                width: 50%
+            }
+            #load-all{
+                right: 32px;
+                top: 100px;
+            }
+        }
+        
+    </style>
+{% endblock %}
+
+{% block main %}
+    <button id="load-all" admission-list="admission">Load All Data</button>
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content-page">
+        <table id="admission_list">
+            <thead>
+                <tr>
+                    <th>SN</th>
+                    <th>Fullname</th>
+                    <th>Session</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody id="loaded-students">
+                {% for student in students %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ student.applicant.get_fullname }}</td>
+                    <td>{{ student.session }}</td>
+                    <td>{% if  student.admitted %}
+                        <a href="{% url 'download' student.pk %}" target="blank">Download Admission</a>
+                        {% else %}
+                            <small>Rejected</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" style="text-align: center; color: red;">No Record Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready( function () {
+    // page loader
+        $.ajax({
+            method: 'GET',
+            url: "{% url 'admissionlist' %}",
+            success:function(res){
+                $('.loader').css('display', 'none');
+            },
+            before:function(res){
+                $('.loader').css('display', 'block');
+            }
+        });
+        $('#admission_list').DataTable();
+
+        $("body").on('click', '#load-all', function(){
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            let search = $(this).attr('admission-list');
+            console.log(search);
+            
+            $.ajax({
+                url: "{% url 'load_all' %}",
+                data: {
+                search: search,
+                'csrfmiddlewaretoken': token,
+                },
+                method: "GET",
+                success:function(response){
+                    $('#loaded-students').html(response)
+                }
+            });
+        });
+    } );
+</script>
+{% endblock %}

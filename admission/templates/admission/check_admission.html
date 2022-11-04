@@ -1,0 +1,124 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %} check admission {% endblock %}
+{% block style %} 
+<style>
+    .content-wrapper1{
+        width: 70%;
+        margin: 30px auto;
+    }
+    .content-wrapper1 h3{
+        margin: 10px auto;
+        text-align: justify;
+    }
+
+    @media (max-width: 767px){
+        .content-wrapper1{
+            width: 100%;
+            margin: 60px auto;
+        }
+        .content-wrapper1 h3{
+            margin: 20px auto;
+            text-align: justify;
+        }
+        input{
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    <div class="loader">
+        <img src="{% static 'images/131.gif' %}" alt="">
+    </div>
+    <div class="content-page">
+        <div class="content-wrapper1">
+            <h3>Check Your Admission by providing Your Phone Number or Email</h3>
+            <form id="check-admission">
+                {% csrf_token %}
+
+                <input type="text" placeholder="Phone Number or Email" class="search">
+                <div class="downlod">
+
+                </div>
+                <button id="btn-search">Search</button>
+            </form>
+            
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready( function () {
+
+        // page loader
+        $.ajax({
+            method: 'GET',
+            url: "{% url 'check_admission' %}",
+            success:function(res){
+                $('.loader').css('display', 'none');
+            },
+            before:function(res){
+                $('.loader').css('display', 'block');
+            }
+        });
+
+        $('body').on('click', '#btn-search', function(e){
+            e.preventDefault();
+            let search = $('.search').val()
+            let token = $('input[name="csrfmiddlewaretoken"]').val();
+            
+            if (search == ''){
+                $(".downlod").html('Enter your phone number or Email to search');
+                $(".downlod").css('color', 'red')
+                $('.search').css('border', 'solid 1px red')
+            }else{
+                $.ajax
+                ({
+                    url: "{% url 'check_admission' %}",
+                    data: {
+                        search:search,
+                        'csrfmiddlewaretoken': token
+                    },
+                    method: "POST",
+                    success:function(response){
+                        $(".downlod").css('color', 'black')
+                        $(".downlod").html(response);
+                        $('#btn-search').removeAttr('disabled', true);
+                        $('#btn-search').html('Search')
+                    },
+                    beforeSend:function(){
+                        $('#btn-search').attr('disabled', true);
+                        $('#btn-search').html('Please wait...')
+                    },
+                    // complete:function(){
+                    // 	$('.causes').addAttr('disabled');
+                    // }
+                })
+            }
+        })
+
+        // $('#check-admission').submit(function(e){
+            
+        //     e.preventDefault();
+
+        //     let search = $('#check-admission').val();
+        //     console.log(search);
+
+        //     $.ajax({
+        //         type: 'POST',
+        //         url: "{% url 'check_admission' %}",
+        //         data: search,
+        //         success: function(response){
+        //             console.log(response)
+        //         }
+        //     });
+        //     return false;
+        // });
+
+    } );
+</script>
+{% endblock %}

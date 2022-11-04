@@ -1,0 +1,9 @@
+{% if admission == 'admit' %}
+    <p style="color: rgb(81, 160, 81);">Congratulations!! You have been offered Admission.</p>
+    <a href="{% url 'download' pk %}" target="blank">Download</a>
+{% elif admission == 'not admit' %}
+    <p>Sorry!! you have not been offered Admission Yet.</p>
+{% elif admission == 'not apply' %}
+    <p>Sorry!! you did'nt apply for the admission.</p>
+    You can apply here <a href="{% url 'apply' %}">Apply</a>
+{% endif %}
